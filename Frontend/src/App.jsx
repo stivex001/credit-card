@@ -1,10 +1,10 @@
+import Payment from "./components/Payment";
+
 function App() {
   return (
-    <>
-      <div>
-        welcome
-      </div>
-    </>
+   <div>
+    <Payment />
+   </div>
   );
 }
 
