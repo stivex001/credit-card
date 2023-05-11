@@ -21,7 +21,7 @@ const Wrapper = styled.div`
   justify-content: center;
   align-items: center;
   padding: 24px;
-  background: #E5E5E5;
+  background: #e5e5e5;
   box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
 `;
 
@@ -39,6 +39,8 @@ const Input = styled.input`
   border-radius: 4px;
   width: 100%;
   box-sizing: border-box;
+
+
 `;
 
 const Button = styled.button`
@@ -69,11 +71,31 @@ const Payment = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
+    // only allow numbers for card number and cvc
+  if (name === "number" || name === "cvc"  || name === "expiry") {
+    if (!/^\d*$/.test(value)) {
+      setFormInputs((prev) => ({ ...prev, [name]: "" }));
+      return;
+    }
+  }
+
     setFormInputs((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleInputFocus = (e) => {
     setFormInputs((prev) => ({ ...prev, focus: e.target.name }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const [month, year] = formInputs.expiry.split("/");
+    const expiryDate = new Date(year, month - 1, 1);
+
+    if (expiryDate < new Date()) {
+      setError(true);
+      return;
+    }
   };
 
   return (
@@ -86,14 +108,17 @@ const Payment = () => {
           name={formInputs.name}
           focused={formInputs.focus}
         />
-        <FormWrapper>
+        <FormWrapper onSubmit={handleSubmit}>
           <Input
-            type="number"
+            type="text"
             name="number"
+            inputMode="numeric"
+            pattern="[0-9]*"
             placeholder="1234 1234 1234 1234"
             value={formInputs.number}
             onChange={handleInputChange}
             onFocus={handleInputFocus}
+            
           />
           <Input
             type="text"
@@ -106,20 +131,31 @@ const Payment = () => {
           <Input
             type="text"
             name="expiry"
+            inputMode="numeric"
+            pattern="[0-9]*"
             placeholder="MM/YY Expiry"
             value={formInputs.expiry}
             onChange={handleInputChange}
             onFocus={handleInputFocus}
+            style={{ borderColor: error ? "red" : "#ccc" }}
           />
+          {error && (
+            <p style={{ color: "red" }}>
+              The expiry date must be after present time
+            </p>
+          )}
+
           <Input
-            type="number"
+            type="text"
             name="cvc"
+            inputMode="numeric"
+            pattern="[0-9]*"
             placeholder="CVC"
             value={formInputs.cvc}
             onChange={handleInputChange}
             onFocus={handleInputFocus}
           />
-          <Button>Confirm Payment</Button>
+          <Button type="submit">Confirm Payment</Button>
         </FormWrapper>
       </Wrapper>
     </Container>
