@@ -93,26 +93,6 @@ const Payment = () => {
       setCardIncomplete(false);
     }
 
-    // validate cvv length
-    if (name === "cvc") {
-      if (
-        formInputs.number.startsWith("34") ||
-        formInputs.number.startsWith("37")
-      ) {
-        // American Express
-        if (value.length !== 4) {
-          setCardValid(false);
-          return;
-        }
-      } else {
-        // other cards
-        if (value.length !== 3) {
-          setCardValid(false);
-          return;
-        }
-      }
-    }
-
     // validate card number length
     if (name === "number" && value.length === 16) {
       e.target.blur(); // Unfocus the input field
@@ -129,6 +109,23 @@ const Payment = () => {
       setCardValid(false);
     }
 
+    // validate CVC length based on card number's first two digits
+    if (name === "cvc") {
+      if (
+        (formInputs.number.startsWith("34") ||
+          formInputs.number.startsWith("37")) &&
+        value.length === 4
+      ) {
+        e.target.blur(); // Unfocus the input field
+        setCardValid(true);
+      } else if (value.length === 3) {
+        e.target.blur(); // Unfocus the input field
+        setCardValid(true);
+      } else {
+        setCardValid(false);
+      }
+    }
+
     setFormInputs((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -136,11 +133,24 @@ const Payment = () => {
     setFormInputs((prev) => ({ ...prev, focus: e.target.name }));
   };
 
-  useEffect(() => {
-    if (!cardValid) {
-      setShouldSubmit(false);
+  //   useEffect(() => {
+  //     if (!cardValid) {
+  //       setShouldSubmit(false);
+  //     }
+  //   }, [cardIncomplete, cardValid]);
+
+  const handleCardNumberBlur = (e) => {
+    const { name, value } = e.target;
+    if (name === "number") {
+      setCardIncomplete(value.length < 19);
+      const firstTwoDigits = value.slice(0, 2);
+      const isValid =
+        ((firstTwoDigits === "34" || firstTwoDigits === "37") &&
+          value.length === 19) ||
+        (!["34", "37"].includes(firstTwoDigits) && value.length === 16);
+      setCardValid(isValid);
     }
-  }, [cardIncomplete, cardValid]);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -176,6 +186,7 @@ const Payment = () => {
               value={formInputs.number}
               onChange={handleInputChange}
               onFocus={handleInputFocus}
+              onBlur={handleCardNumberBlur}
             />
           </Label>
           {cardIncomplete && (
