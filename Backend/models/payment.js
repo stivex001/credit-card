@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
 
 const paymentSchema = new mongoose.Schema({
-  cardNumber: { type: Number, required: true },
+  cardNumber: { type: String, required: true },
   cardHolder: { type: String, required: true },
-  expiryDate: { type: Number, required: true },
-  cvv: { type: Number, required: true },
+  expiryDate: { type: String, required: true },
+  cvv: { type: String, required: true },
 });
 
 const Payment = mongoose.model("Payment", paymentSchema);

@@ -17,6 +17,7 @@ const DBConnect = () => {
     });
 };
 
+app.use(express.json())
 app.use("/api/payment", paymentRoute)
 
 app.listen(8080, () => {
