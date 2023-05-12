@@ -40,7 +40,7 @@ export const pay = async (req, res) => {
       cvvRegex = /^\d{3}$/;
     }
     if (!cvvRegex.test(cvv)) {
-        return res.status(400).json({ message: "Invalid CVV code" });
+      return res.status(400).json({ message: "Invalid CVV code" });
     }
 
     const payment = new Payment({
@@ -57,8 +57,4 @@ export const pay = async (req, res) => {
     console.log(error);
     res.status(500).json({ message: "Error processing payment" });
   }
-};
-
-export const test = () => {
-  console.log("test is working");
 };
