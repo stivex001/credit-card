@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Cards from "react-credit-cards-2";
 import "react-credit-cards-2/dist/es/styles-compiled.css";
+import { FaCheck } from "react-icons/fa";
 import {
   Button,
   Container,
@@ -23,6 +24,7 @@ const Payment = () => {
   const [cardIncomplete, setCardIncomplete] = useState(false);
   const [cardValid, setCardValid] = useState(true);
   const [shouldSubmit, setShouldSubmit] = useState(false);
+  const [cardCompleted, setCardCompleted] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -75,12 +77,33 @@ const Payment = () => {
       }
     }
 
+    // format expiry field
+    if (name === "expiry" && value.length === 2) {
+      setFormInputs((prev) => ({ ...prev, [name]: value + "/" }));
+    } else if (name === "expiry" && value.length === 4) {
+      e.target.blur(); // Unfocus the input field
+    }
+
     setFormInputs((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleInputFocus = (e) => {
     setFormInputs((prev) => ({ ...prev, focus: e.target.name }));
   };
+
+  // update the cardValid state when the card number is completed
+  // update the cardValid state when the card number is completed
+  useEffect(() => {
+    if (
+      formInputs.number.length === 16 ||
+      formInputs.number.startsWith("34") ||
+      formInputs.number.startsWith("37")
+    ) {
+      setCardCompleted(true);
+    } else {
+      setCardCompleted(false);
+    }
+  }, [formInputs.number]);
 
   //   useEffect(() => {
   //     if (!cardValid) {
@@ -123,6 +146,9 @@ const Payment = () => {
               onChange={handleInputChange}
               onFocus={handleInputFocus}
             />
+            {cardCompleted && !cardIncomplete && (
+              <FaCheck style={{ color: "green", marginLeft: "5px" }} />
+            )}
           </Label>
           {cardIncomplete && (
             <p style={{ color: "red" }}>Your card is incomplete</p>
@@ -160,13 +186,13 @@ const Payment = () => {
             )}
           </Label>
           <Label>
-            CVC
+            CVV
             <Input
               type="text"
               name="cvc"
               inputMode="numeric"
               pattern="[0-9]*"
-              placeholder="CVC"
+              placeholder="CVV"
               value={formInputs.cvc}
               onChange={handleInputChange}
               onFocus={handleInputFocus}
