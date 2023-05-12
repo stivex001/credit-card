@@ -1,20 +1,10 @@
-import Payment from "./models/payment";
+import express from "express";
+import { pay } from "../controllers/paymentController.js";
 
-router.post("/payments", async (req, res) => {
-  try {
-    const { cardNumber, cardHolder, expiryDate, cvc, amount } = req.body;
 
-    const payment = new Payment({
-      cardNumber,
-      cardHolder,
-      expiryDate,
-      cvc,
-    });
 
-    await payment.save();
+const router = express.Router()
 
-    res.status(201).json({ message: "Payment successful" });
-  } catch (error) {
-    res.status(500).json({ message: "Error processing payment" });
-  }
-});
+router.post("/payments", pay)
+
+export default router;

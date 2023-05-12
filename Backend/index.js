@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import paymentRoute from "./Routes/paymentRoute.js"
 
 const app = express();
 dotenv.config();
@@ -15,6 +16,8 @@ const DBConnect = () => {
       throw err;
     });
 };
+
+app.use("/api/payment", paymentRoute)
 
 app.listen(8080, () => {
     DBConnect()
