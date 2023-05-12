@@ -1,6 +1,8 @@
 import express from "express";
 import mongoose from "mongoose";
+import cors from "cors";
 import dotenv from "dotenv";
+
 import paymentRoute from "./Routes/paymentRoute.js"
 
 const app = express();
@@ -17,7 +19,10 @@ const DBConnect = () => {
     });
 };
 
+// MIDDLEWARES
+
 app.use(express.json())
+app.use(cors());
 app.use("/api/payment", paymentRoute)
 
 app.listen(8080, () => {

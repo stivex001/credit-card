@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Cards from "react-credit-cards-2";
 import "react-credit-cards-2/dist/es/styles-compiled.css";
 import { FaCheck } from "react-icons/fa";
+import axios from "axios";
 import {
   Button,
   Container,
@@ -162,18 +163,31 @@ const Payment = () => {
   //     }
   //   }, [cardIncomplete, cardValid]);
 
-  const handleSubmit = (e) => {
+  const handlePayment = async (e) => {
     e.preventDefault();
+    if (!cardValid || !nameValid || cardIncomplete || expiryError) {
+      setError(true);
+      return;
+    }
 
-    const [month, year] = formInputs.expiry.split("/");
-    const expiryDate = new Date(year, month - 1, 1);
-
-    // if (expiryDate < new Date() || !cardCompleted || !nameValid) {
-    //   setError(true);
-    //   return;
-    // }
-
-    setShouldSubmit(true);
+    try {
+      const response = await axios.post("http://localhost:8080/api/payment", {
+        cardNumber: formInputs.number,
+        cardHolder: formInputs.name,
+        expiryDate: formInputs.expiry,
+        cvv: formInputs.cvc,
+      });
+      console.log(response.data);
+      //   setFormInputs({
+      //     number: "",
+      //     expiry: "",
+      //     cvc: "",
+      //     name: "",
+      //     focus: "",
+      //   });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -186,7 +200,7 @@ const Payment = () => {
           name={formInputs.name}
           focused={formInputs.focus}
         />
-        <FormWrapper onSubmit={handleSubmit}>
+        <FormWrapper onSubmit={handlePayment}>
           <Label>
             Card Number
             <Input
@@ -261,9 +275,7 @@ const Payment = () => {
             />
           </Label>
 
-          <Button disabled={shouldSubmit} type="submit">
-            Confirm Payment
-          </Button>
+          <Button type="submit">Confirm Payment</Button>
         </FormWrapper>
       </Wrapper>
     </Container>
