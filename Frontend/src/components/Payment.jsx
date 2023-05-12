@@ -2,65 +2,14 @@
 import { useEffect, useState } from "react";
 import Cards from "react-credit-cards-2";
 import "react-credit-cards-2/dist/es/styles-compiled.css";
-import styled from "styled-components";
-
-const Container = styled.div`
-  background-color: #82ccdd;
-  background-image: url("https://images.unsplash.com/photo-1525253086316-115d7aab269f?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjEyMDd9");
-  background-size: cover;
-  background-position: center;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 24px;
-  background: #e5e5e5;
-  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
-`;
-
-const FormWrapper = styled.form`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 24px;
-`;
-
-const Input = styled.input`
-  padding: 12px;
-  margin: 12px 0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 100%;
-  box-sizing: border-box;
-`;
-
-const Button = styled.button`
-  padding: 12px;
-  margin: 12px 0;
-  border: none;
-  border-radius: 4px;
-  background-color: #0070f3;
-  color: #fff;
-  font-weight: bold;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #0055b8;
-  }
-`;
-
-const Label = styled.label`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-`;
+import {
+  Button,
+  Container,
+  FormWrapper,
+  Input,
+  Label,
+  Wrapper,
+} from "./payment.styles";
 
 const Payment = () => {
   const [formInputs, setFormInputs] = useState({
@@ -78,7 +27,7 @@ const Payment = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    // only allow numbers for card number and cvc
+    // only allow numbers for card number, expiry and cvc
     if (name === "number" || name === "cvc" || name === "expiry") {
       if (!/^\d*$/.test(value)) {
         setFormInputs((prev) => ({ ...prev, [name]: "" }));
@@ -139,19 +88,6 @@ const Payment = () => {
   //     }
   //   }, [cardIncomplete, cardValid]);
 
-  const handleCardNumberBlur = (e) => {
-    const { name, value } = e.target;
-    if (name === "number") {
-      setCardIncomplete(value.length < 19);
-      const firstTwoDigits = value.slice(0, 2);
-      const isValid =
-        ((firstTwoDigits === "34" || firstTwoDigits === "37") &&
-          value.length === 19) ||
-        (!["34", "37"].includes(firstTwoDigits) && value.length === 16);
-      setCardValid(isValid);
-    }
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -186,7 +122,6 @@ const Payment = () => {
               value={formInputs.number}
               onChange={handleInputChange}
               onFocus={handleInputFocus}
-              onBlur={handleCardNumberBlur}
             />
           </Label>
           {cardIncomplete && (
