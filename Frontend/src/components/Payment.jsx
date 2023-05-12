@@ -45,14 +45,23 @@ const Payment = () => {
     }
 
     // validate card number length
-    if (name === "number" && value.length === 16) {
+    if (name === "number" && value.length === 16 && luhnCheck(value)) {
       e.target.blur(); // Unfocus the input field
       setCardIncomplete(false);
       setCardValid(true);
     } else if (
-      (name === "number" && value.length === 19 && value.startsWith("34")) ||
-      (name === "number" && value.length === 19 && value.startsWith("37"))
+      (name === "number" &&
+        value.length >= 15 &&
+        value.length <= 19 &&
+        value.startsWith("34") &&
+        luhnCheck(value)) ||
+      (name === "number" &&
+        value.length >= 15 &&
+        value.length <= 19 &&
+        value.startsWith("37") &&
+        luhnCheck(value))
     ) {
+      console.log(`${value} america express is valid`);
       e.target.blur(); // Unfocus the input field
       setCardIncomplete(false);
       setCardValid(true);
@@ -91,7 +100,22 @@ const Payment = () => {
     setFormInputs((prev) => ({ ...prev, focus: e.target.name }));
   };
 
-  // update the cardValid state when the card number is completed
+  // Luhn algorithm implementation
+  const luhnCheck = (value) => {
+    let sum = 0;
+    for (let i = 0; i < value.length; i++) {
+      let cardNum = parseInt(value[i], 10);
+      if ((value.length - i) % 2 === 0) {
+        cardNum *= 2;
+        if (cardNum > 9) {
+          cardNum -= 9;
+        }
+      }
+      sum += cardNum;
+    }
+    return sum % 10 === 0;
+  };
+
   // update the cardValid state when the card number is completed
   useEffect(() => {
     if (
@@ -146,13 +170,15 @@ const Payment = () => {
               onChange={handleInputChange}
               onFocus={handleInputFocus}
             />
-            {cardCompleted && !cardIncomplete && (
-              <FaCheck style={{ color: "green", marginLeft: "5px" }} />
+            {cardValid && !cardIncomplete ? (
+              <FaCheck style={{ color: "green" }} />
+            ) : (
+              <p style={{ color: "red" }}>Your card is not Valid</p>
+            )}
+            {cardIncomplete && (
+              <p style={{ color: "red" }}>Your card is incomplete</p>
             )}
           </Label>
-          {cardIncomplete && (
-            <p style={{ color: "red" }}>Your card is incomplete</p>
-          )}
 
           <Label>
             Card Holder Name
