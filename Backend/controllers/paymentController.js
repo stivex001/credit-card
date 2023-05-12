@@ -27,9 +27,20 @@ export const pay = async (req, res) => {
     const expDate = new Date(`20${expYear}`, expMonth - 1);
     const currentDate = new Date();
     if (expDate <= currentDate) {
-      return res
-        .status(400)
-        .json({ message: "Your card has Expired." });
+      return res.status(400).json({ message: "Your card has Expired." });
+    }
+
+    // Validate CVV code
+    let cvvRegex;
+    if (cardNumber.startsWith("34") || cardNumber.startsWith("37")) {
+      // American Express card
+      cvvRegex = /^\d{4}$/;
+    } else {
+      // Other cards
+      cvvRegex = /^\d{3}$/;
+    }
+    if (!cvvRegex.test(cvv)) {
+        return res.status(400).json({ message: "Invalid CVV code" });
     }
 
     const payment = new Payment({
