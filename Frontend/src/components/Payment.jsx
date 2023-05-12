@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 /* eslint-disable no-unused-vars */
 import { useEffect, useState } from "react";
 import Cards from "react-credit-cards-2";
@@ -23,8 +24,10 @@ const Payment = () => {
   const [error, setError] = useState(false);
   const [cardIncomplete, setCardIncomplete] = useState(false);
   const [cardValid, setCardValid] = useState(true);
+  const [nameValid, setNameValid] = useState(false);
   const [shouldSubmit, setShouldSubmit] = useState(false);
   const [cardCompleted, setCardCompleted] = useState(false);
+  const [expiryError, setExpiryError] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -61,12 +64,17 @@ const Payment = () => {
         value.startsWith("37") &&
         luhnCheck(value))
     ) {
-      console.log(`${value} america express is valid`);
       e.target.blur(); // Unfocus the input field
       setCardIncomplete(false);
       setCardValid(true);
     } else {
       setCardValid(false);
+    }
+
+    // Validate card holder name
+
+    if (name === "name") {
+      setNameValid(value.length >= 2 && value.trim().length > 0);
     }
 
     // validate CVC length based on card number's first two digits
@@ -87,10 +95,29 @@ const Payment = () => {
     }
 
     // format expiry field
-    if (name === "expiry" && value.length === 2) {
-      setFormInputs((prev) => ({ ...prev, [name]: value + "/" }));
-    } else if (name === "expiry" && value.length === 4) {
+    // if (name === "expiry" && value.length === 2) {
+    //   setFormInputs((prev) => ({ ...prev, [name]: value + "/" }));
+    // } else if (name === "expiry" && value.length === 4) {
+    //   e.target.blur(); // Unfocus the input field
+    // }
+
+    // Validate the expiry field
+
+    if (name === "expiry" && value.length === 4) {
       e.target.blur(); // Unfocus the input field
+      const [month, year] = value.split("/");
+      const currentYear = new Date().getFullYear().toString().substring(-2);
+      const currentMonth = new Date().getMonth() + 1;
+
+      console.log(month, year);
+      if (
+        +year < +currentYear ||
+        (+year === +currentYear && +month < currentMonth)
+      ) {
+        setExpiryError(true);
+      } else {
+        setExpiryError(false);
+      }
     }
 
     setFormInputs((prev) => ({ ...prev, [name]: value }));
@@ -141,10 +168,12 @@ const Payment = () => {
     const [month, year] = formInputs.expiry.split("/");
     const expiryDate = new Date(year, month - 1, 1);
 
-    if (expiryDate < new Date()) {
-      setError(true);
-      return;
-    }
+    // if (expiryDate < new Date() || !cardCompleted || !nameValid) {
+    //   setError(true);
+    //   return;
+    // }
+
+    setShouldSubmit(true);
   };
 
   return (
@@ -190,6 +219,11 @@ const Payment = () => {
               onChange={handleInputChange}
               onFocus={handleInputFocus}
             />
+            {nameValid ? (
+              <FaCheck color="green" />
+            ) : (
+              <p style={{ color: "red" }}>Name field cannot be empty</p>
+            )}
           </Label>
 
           <Label>
@@ -199,16 +233,18 @@ const Payment = () => {
               name="expiry"
               inputMode="numeric"
               pattern="[0-9]*"
-              placeholder="MM/YY Expiry"
+              placeholder="MM / YY Expiry"
               value={formInputs.expiry}
               onChange={handleInputChange}
               onFocus={handleInputFocus}
               style={{ borderColor: error ? "red" : "#ccc" }}
             />
-            {error && (
+            {expiryError ? (
               <p style={{ color: "red" }}>
-                The expiry date must be after present time
+                Your card's expiration year is in the past.
               </p>
+            ) : (
+              <FaCheck color="green" />
             )}
           </Label>
           <Label>
@@ -225,7 +261,7 @@ const Payment = () => {
             />
           </Label>
 
-          <Button disabled={!cardValid} type="submit">
+          <Button disabled={shouldSubmit} type="submit">
             Confirm Payment
           </Button>
         </FormWrapper>
