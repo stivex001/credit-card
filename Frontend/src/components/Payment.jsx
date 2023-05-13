@@ -181,10 +181,10 @@ const Payment = () => {
         expiryDate: formInputs.expiry,
         cvv: formInputs.cvc,
       });
-      if (response.status === 200) {
+      if (response.status === 201) {
         setPaymentSuccessful(true);
       }
-      console.log(response.data);
+      console.log(response);
       //   setFormInputs({
       //     number: "",
       //     expiry: "",
