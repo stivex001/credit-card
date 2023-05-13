@@ -20,10 +20,12 @@
 
 To get a local copy of the code, clone it using git:
 
-```
-git clone https://github.com/stivex001/credit-card
 The repo consist of two folders Frontend and Backend 
 to access the Frontend folder,
+
+```
+git clone https://github.com/stivex001/credit-card
+
 cd Frontend
 ```
 
