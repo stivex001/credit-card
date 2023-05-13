@@ -19,12 +19,12 @@ const DBConnect = () => {
     });
 };
 
-const corsOptions = {
-  origin: "https://credit-card-checker.vercel.app/",
-  credentials: true, //access-control-allow-credentials:true
-  optionSuccessStatus: 200,
-};
-app.use(cors(corsOptions));
+app.use(
+  cors({
+    origin: "https://credit-card-checker.vercel.app",
+    credentials: true,
+  })
+);
 
 // MIDDLEWARES
 
