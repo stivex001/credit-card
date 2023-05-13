@@ -1,6 +1,8 @@
 import Payment from "../models/payment.js";
 
 export const pay = async (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+
   try {
     const { cardNumber, cardHolder, expiryDate, cvv } = req.body;
 
