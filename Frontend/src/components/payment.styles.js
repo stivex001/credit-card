@@ -47,6 +47,11 @@ export const Button = styled.button`
   &:hover {
     background-color: #0055b8;
   }
+
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
 `;
 
 export const Label = styled.label`

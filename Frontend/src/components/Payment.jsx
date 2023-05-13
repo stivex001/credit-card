@@ -24,8 +24,8 @@ const Payment = () => {
     focus: "",
   });
   const [error, setError] = useState(false);
-  const [cardIncomplete, setCardIncomplete] = useState(false);
-  const [cardValid, setCardValid] = useState(true);
+  const [validError, setValidError] = useState(false);
+  const [cardValid, setCardValid] = useState(null);
   const [nameValid, setNameValid] = useState(false);
   const [shouldSubmit, setShouldSubmit] = useState(false);
   const [cardCompleted, setCardCompleted] = useState(false);
@@ -47,16 +47,16 @@ const Payment = () => {
 
     // check if card number is incomplete
     if (name === "number" && value.length < 16) {
-      setCardIncomplete(true);
+      setCardValid(null);
     } else {
-      setCardIncomplete(false);
+      setCardValid(true);
     }
 
     // validate card number length
     if (name === "number" && value.length === 16 && luhnCheck(value)) {
       e.target.blur(); // Unfocus the input field
-      setCardIncomplete(false);
       setCardValid(true);
+      setValidError(false);
     } else if (
       (name === "number" &&
         value.length >= 15 &&
@@ -70,10 +70,11 @@ const Payment = () => {
         luhnCheck(value))
     ) {
       e.target.blur(); // Unfocus the input field
-      setCardIncomplete(false);
       setCardValid(true);
+      setValidError(false);
     } else {
-      setCardValid(false);
+      setCardValid(null);
+      setValidError(true);
     }
 
     // Validate card holder name
@@ -169,7 +170,7 @@ const Payment = () => {
 
   const handlePayment = async (e) => {
     e.preventDefault();
-    if (!cardValid || !nameValid || cardIncomplete || expiryError) {
+    if (!cardValid || !nameValid || expiryError) {
       setError(true);
       return;
     }
@@ -203,6 +204,17 @@ const Payment = () => {
     }
   }, [paymentSuccessful, navigate]);
 
+  const isFormValid = () => {
+    return (
+      !error &&
+      cardValid &&
+      nameValid &&
+      !shouldSubmit &&
+      cardCompleted &&
+      !expiryError
+    );
+  };
+
   return (
     <Container>
       <Wrapper>
@@ -226,13 +238,9 @@ const Payment = () => {
               onChange={handleInputChange}
               onFocus={handleInputFocus}
             />
-            {cardValid && !cardIncomplete ? (
-              <FaCheck style={{ color: "green" }} />
-            ) : (
+            {cardValid && <FaCheck style={{ color: "green" }} />}
+            {validError && (
               <p style={{ color: "red" }}>Your card is not Valid</p>
-            )}
-            {cardIncomplete && (
-              <p style={{ color: "red" }}>Your card is incomplete</p>
             )}
           </Label>
 
@@ -288,7 +296,9 @@ const Payment = () => {
             />
           </Label>
 
-          <Button type="submit">Confirm Payment</Button>
+          <Button type="submit" disabled={isFormValid}>
+            Confirm Payment
+          </Button>
         </FormWrapper>
       </Wrapper>
     </Container>
