@@ -23,7 +23,8 @@ export const pay = async (req, res) => {
     }
 
     // Validate expiry date
-    const [expMonth, expYear] = expiryDate.split("/");
+    const expMonth = expiryDate.slice(0, 2);
+    const expYear = expiryDate.slice(2);
     const expDate = new Date(`20${expYear}`, expMonth - 1);
     const currentDate = new Date();
     if (expDate <= currentDate) {
