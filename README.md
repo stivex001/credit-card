@@ -4,11 +4,9 @@
   </a>
 </h1>
 
-
 <p align="center">
    Credit Card validation is a free and open-source web application that lets you validate your credit card in the browser.
 </p>
-
 
 ## Built with
 
@@ -20,7 +18,7 @@
 
 To get a local copy of the code, clone it using git:
 
-The repo consist of two folders Frontend and Backend 
+The repo consist of two folders Frontend and Backend
 to access the Frontend folder,
 
 ```
@@ -44,19 +42,22 @@ npm run dev
 And then open http://localhost:5173/ to view it in the browser.
 
 to access the Backend folder,
+
+```
 cd Backend
 ```
-
 Install dependencies:
-
 ```
 npm install
+
 ```
 
 Now, you can start a local web server by running:
 
 ```
+
 npm start
+
 ```
 
 And then open http://localhost:8080/ to start the node app .
@@ -77,3 +78,4 @@ In this project, you can run the following scripts:
 Credit Card is built and maintained by [Stephen Adeyemo](https://github.com/stivex001).
 
 ## License
+```
