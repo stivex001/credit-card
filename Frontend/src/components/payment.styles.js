@@ -2,9 +2,6 @@ import { styled } from "styled-components";
 
 export const Container = styled.div`
   background-color: #82ccdd;
-  background-image: url("https://images.unsplash.com/photo-1525253086316-115d7aab269f?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjEyMDd9");
-  background-size: cover;
-  background-position: center;
   height: 100vh;
   display: flex;
   justify-content: center;

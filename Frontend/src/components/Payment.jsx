@@ -5,6 +5,7 @@ import Cards from "react-credit-cards-2";
 import "react-credit-cards-2/dist/es/styles-compiled.css";
 import { FaCheck } from "react-icons/fa";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import {
   Button,
   Container,
@@ -29,6 +30,9 @@ const Payment = () => {
   const [shouldSubmit, setShouldSubmit] = useState(false);
   const [cardCompleted, setCardCompleted] = useState(false);
   const [expiryError, setExpiryError] = useState(false);
+  const [paymentSuccessful, setPaymentSuccessful] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -177,6 +181,9 @@ const Payment = () => {
         expiryDate: formInputs.expiry,
         cvv: formInputs.cvc,
       });
+      if (response.status === 200) {
+        setPaymentSuccessful(true);
+      }
       console.log(response.data);
       //   setFormInputs({
       //     number: "",
@@ -189,6 +196,12 @@ const Payment = () => {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    if (paymentSuccessful) {
+      navigate("/success");
+    }
+  }, [paymentSuccessful, navigate]);
 
   return (
     <Container>
