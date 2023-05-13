@@ -14,6 +14,7 @@ export const Wrapper = styled.div`
   justify-content: center;
   align-items: center;
   padding: 24px;
+  /* margin-top: 100px; */
   background: #e5e5e5;
   box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
 `;
@@ -22,12 +23,12 @@ export const FormWrapper = styled.form`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 24px;
+  margin-top: 20px;
 `;
 
 export const Input = styled.input`
-  padding: 12px;
-  margin: 12px 0;
+  padding: 8px;
+  margin: 10px 0;
   border: 1px solid #ccc;
   border-radius: 4px;
   width: 100%;
@@ -35,8 +36,8 @@ export const Input = styled.input`
 `;
 
 export const Button = styled.button`
-  padding: 12px;
-  margin: 12px 0;
+  padding: 8px;
+  margin: 10px 0;
   border: none;
   border-radius: 4px;
   background-color: #0070f3;
@@ -48,10 +49,6 @@ export const Button = styled.button`
     background-color: #0055b8;
   }
 
-  &:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-  }
 `;
 
 export const Label = styled.label`

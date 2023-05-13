@@ -29,8 +29,6 @@ const Payment = () => {
   const [validError, setValidError] = useState(false);
   const [cardValid, setCardValid] = useState(false);
   const [nameValid, setNameValid] = useState(false);
-  const [shouldSubmit, setShouldSubmit] = useState(false);
-  const [cardCompleted, setCardCompleted] = useState(false);
   const [expiryError, setExpiryError] = useState(false);
   const [expiryValid, setExpiryValid] = useState(false);
   const [cvvValid, setCvvValid] = useState(false);
@@ -87,8 +85,8 @@ const Payment = () => {
 
     if (name === "name") {
       setNameValid(value.length >= 2 && value.trim().length > 0);
-      setCardValid(true);
-      setValidError(false);
+      //   setCardValid(true);
+      //   setValidError(false);
     }
 
     // validate CVC length based on card number's first two digits
@@ -105,8 +103,8 @@ const Payment = () => {
       } else if (value.length === 3) {
         e.target.blur(); // Unfocus the input field
         setCvvValid(true);
-        setCardValid(true);
-        setValidError(false);
+        // setCardValid(true);
+        // setValidError(false);
       } else {
         setCvvValid(false);
         setCardValid(false);
@@ -130,8 +128,8 @@ const Payment = () => {
       } else {
         setExpiryError(false);
         setExpiryValid(true);
-        setCardValid(true);
-        setValidError(false);
+        // setCardValid(true);
+        // setValidError(false);
         if (value.length === 4) {
           e.target.blur(); // Unfocus the input field
           setFormInputs((prev) => ({ ...prev, [name]: `${value}/` }));
@@ -162,29 +160,25 @@ const Payment = () => {
     return sum % 10 === 0;
   };
 
-  // update the cardValid state when the card number is completed
-  //   useEffect(() => {
-  //     if (
-  //       formInputs.number.length === 16 ||
-  //       formInputs.number.startsWith("34") ||
-  //       formInputs.number.startsWith("37")
-  //     ) {
-  //       setCardCompleted(true);
-  //     } else {
-  //       setCardCompleted(false);
-  //     }
-  //   }, [formInputs.number]);
-
-  //   useEffect(() => {
-  //     if (!cardValid) {
-  //       setShouldSubmit(false);
-  //     }
-  //   }, [cardIncomplete, cardValid]);
+  //   update the cardValid state when the card number is completed
+  useEffect(() => {
+    if (
+      (formInputs.number.length === 16 ||
+      formInputs.number.startsWith("34") ||
+      formInputs.number.startsWith("37"))&& luhnCheck(formInputs.number)
+    ) {
+      setValidError(false);
+      setCardValid(true)
+    } else {
+      setValidError(true);
+      setCardValid(false)
+    }
+  }, [formInputs.number]);
 
   const handlePayment = async (e) => {
     e.preventDefault();
     if (!cardValid || !nameValid || expiryError) {
-      setError(true);
+      toast.error("Invalid Credit Card Kindly try again!");
       return;
     }
 
