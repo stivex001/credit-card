@@ -30,6 +30,7 @@ const Payment = () => {
   const [shouldSubmit, setShouldSubmit] = useState(false);
   const [cardCompleted, setCardCompleted] = useState(false);
   const [expiryError, setExpiryError] = useState(false);
+  const [expiryValid, setExpiryValid] = useState(false);
   const [paymentSuccessful, setPaymentSuccessful] = useState(false);
 
   const navigate = useNavigate();
@@ -101,36 +102,25 @@ const Payment = () => {
 
     // Validate the expiry field
     if (name === "expiry") {
-      const [expMonth, expYear] = value.split("/");
+      const expMonth = value.substring(0, 2);
+      const expYear = value.substring(2);
       const expDate = new Date(`20${expYear}`, expMonth - 1);
       const currentDate = new Date();
-      console.log(currentDate);
-      if (expDate <= currentDate) {
+
+      if (expDate <= currentDate && value.length === 4) {
         setExpiryError(true);
+        setExpiryValid(false)
+        e.target.blur(); // Unfocus the input field
       } else {
         setExpiryError(false);
-        if (value.length === 2 && !value.includes("/")) {
-          setFormInputs((prev) => ({ ...prev, [name]: `${value}/` }));
-        } else if (value.length === 4) {
+        setExpiryValid(true)
+        if (value.length === 4) {
           e.target.blur(); // Unfocus the input field
+          setFormInputs((prev) => ({ ...prev, [name]: `${value}/` }));
         }
+        
       }
     }
-
-    // if (name === "expiry") {
-    //   const [expMonth, expYear] = value.split("/");
-    //   const expDate = new Date(`20${expYear}`, expMonth - 1);
-    //   const currentDate = new Date();
-    //   if (expDate <= currentDate) {
-    //     setExpiryError(true);
-    //     setCardValid(false);
-    //   } else {
-    //     setExpiryError(false);
-    //     // if (cardCompleted && nameValid) {
-    //     //   setCardValid(true);
-    //     // }
-    //   }
-    // }
 
     setFormInputs((prev) => ({ ...prev, [name]: value }));
   };
@@ -274,11 +264,12 @@ const Payment = () => {
               value={formInputs.expiry}
               onChange={handleInputChange}
               onFocus={handleInputFocus}
-              style={{ borderColor: error ? "red" : "#ccc" }}
+              //   style={{ borderColor: error ? "red" : "#ccc" }}
             />
             {expiryError && (
               <p style={{ color: "red" }}>Your card has expired</p>
             )}
+            {expiryValid && <FaCheck color="green" />}
           </Label>
           <Label>
             CVV
