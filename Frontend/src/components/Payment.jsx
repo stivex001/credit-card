@@ -6,6 +6,8 @@ import "react-credit-cards-2/dist/es/styles-compiled.css";
 import { FaCheck } from "react-icons/fa";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   Button,
   Container,
@@ -25,12 +27,13 @@ const Payment = () => {
   });
   const [error, setError] = useState(false);
   const [validError, setValidError] = useState(false);
-  const [cardValid, setCardValid] = useState(null);
+  const [cardValid, setCardValid] = useState(false);
   const [nameValid, setNameValid] = useState(false);
   const [shouldSubmit, setShouldSubmit] = useState(false);
   const [cardCompleted, setCardCompleted] = useState(false);
   const [expiryError, setExpiryError] = useState(false);
   const [expiryValid, setExpiryValid] = useState(false);
+  const [cvvValid, setCvvValid] = useState(false);
   const [paymentSuccessful, setPaymentSuccessful] = useState(false);
 
   const navigate = useNavigate();
@@ -48,9 +51,11 @@ const Payment = () => {
 
     // check if card number is incomplete
     if (name === "number" && value.length < 16) {
-      setCardValid(null);
+      setCardValid(false);
+      setValidError(true);
     } else {
       setCardValid(true);
+      setValidError(false);
     }
 
     // validate card number length
@@ -74,7 +79,7 @@ const Payment = () => {
       setCardValid(true);
       setValidError(false);
     } else {
-      setCardValid(null);
+      setCardValid(false);
       setValidError(true);
     }
 
@@ -82,7 +87,8 @@ const Payment = () => {
 
     if (name === "name") {
       setNameValid(value.length >= 2 && value.trim().length > 0);
-      setCardValid(null);
+      setCardValid(true);
+      setValidError(false);
     }
 
     // validate CVC length based on card number's first two digits
@@ -93,10 +99,18 @@ const Payment = () => {
         value.length === 4
       ) {
         e.target.blur(); // Unfocus the input field
+        setCvvValid(true);
+        setCardValid(true);
+        setValidError(false);
       } else if (value.length === 3) {
         e.target.blur(); // Unfocus the input field
+        setCvvValid(true);
+        setCardValid(true);
+        setValidError(false);
       } else {
-        // setCardValid(false);
+        setCvvValid(false);
+        setCardValid(false);
+        setValidError(true);
       }
     }
 
@@ -109,16 +123,19 @@ const Payment = () => {
 
       if (expDate <= currentDate && value.length === 4) {
         setExpiryError(true);
-        setExpiryValid(false)
+        setExpiryValid(false);
+        setCardValid(false);
+        setValidError(true);
         e.target.blur(); // Unfocus the input field
       } else {
         setExpiryError(false);
-        setExpiryValid(true)
+        setExpiryValid(true);
+        setCardValid(true);
+        setValidError(false);
         if (value.length === 4) {
           e.target.blur(); // Unfocus the input field
           setFormInputs((prev) => ({ ...prev, [name]: `${value}/` }));
         }
-        
       }
     }
 
@@ -146,17 +163,17 @@ const Payment = () => {
   };
 
   // update the cardValid state when the card number is completed
-  useEffect(() => {
-    if (
-      formInputs.number.length === 16 ||
-      formInputs.number.startsWith("34") ||
-      formInputs.number.startsWith("37")
-    ) {
-      setCardCompleted(true);
-    } else {
-      setCardCompleted(false);
-    }
-  }, [formInputs.number]);
+  //   useEffect(() => {
+  //     if (
+  //       formInputs.number.length === 16 ||
+  //       formInputs.number.startsWith("34") ||
+  //       formInputs.number.startsWith("37")
+  //     ) {
+  //       setCardCompleted(true);
+  //     } else {
+  //       setCardCompleted(false);
+  //     }
+  //   }, [formInputs.number]);
 
   //   useEffect(() => {
   //     if (!cardValid) {
@@ -182,34 +199,30 @@ const Payment = () => {
         setPaymentSuccessful(true);
       }
       console.log(response);
-      //   setFormInputs({
-      //     number: "",
-      //     expiry: "",
-      //     cvc: "",
-      //     name: "",
-      //     focus: "",
-      //   });
+      setFormInputs({
+        number: "",
+        expiry: "",
+        cvc: "",
+        name: "",
+        focus: "",
+      });
     } catch (error) {
-      console.log(error);
+      if (error.response.status === 400) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error(error.response.data.message);
+      }
     }
   };
 
   useEffect(() => {
     if (paymentSuccessful) {
-      navigate("/success");
+      toast.success("Payment Successful");
+      setTimeout(() => {
+        navigate("/success");
+      }, 5000);
     }
   }, [paymentSuccessful, navigate]);
-
-  const isFormValid = () => {
-    return (
-      !error &&
-      cardValid &&
-      nameValid &&
-      !shouldSubmit &&
-      cardCompleted &&
-      !expiryError
-    );
-  };
 
   return (
     <Container>
@@ -227,6 +240,7 @@ const Payment = () => {
             <Input
               type="text"
               name="number"
+              required
               inputMode="numeric"
               pattern="[0-9]*"
               placeholder="1234 1234 1234 1234"
@@ -249,6 +263,7 @@ const Payment = () => {
               value={formInputs.name}
               onChange={handleInputChange}
               onFocus={handleInputFocus}
+              required
             />
             {nameValid && <FaCheck color="green" />}
           </Label>
@@ -264,7 +279,7 @@ const Payment = () => {
               value={formInputs.expiry}
               onChange={handleInputChange}
               onFocus={handleInputFocus}
-              //   style={{ borderColor: error ? "red" : "#ccc" }}
+              required
             />
             {expiryError && (
               <p style={{ color: "red" }}>Your card has expired</p>
@@ -282,12 +297,15 @@ const Payment = () => {
               value={formInputs.cvc}
               onChange={handleInputChange}
               onFocus={handleInputFocus}
+              required
             />
+            {cvvValid && <FaCheck color="green" />}
           </Label>
 
           <Button type="submit">Confirm Payment</Button>
         </FormWrapper>
       </Wrapper>
+      <ToastContainer />
     </Container>
   );
 };
