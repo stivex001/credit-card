@@ -183,7 +183,7 @@ const Payment = () => {
     }
 
     try {
-      const response = await axios.post("https://credit-card-bg20egukv-stivex001.vercel.app//api/payment", {
+      const response = await axios.post("https://credit-card-api-green.vercel.app/api/payment", {
         cardNumber: formInputs.number,
         cardHolder: formInputs.name,
         expiryDate: formInputs.expiry,
@@ -202,9 +202,9 @@ const Payment = () => {
       });
     } catch (error) {
       if (error.response?.status === 400) {
-        toast.error(error.response.data?.message);
+        toast.error(error.response?.data.message);
       } else {
-        toast.error(error.response.data?.message);
+        toast.error(error.response?.data.message);
       }
     }
   };
