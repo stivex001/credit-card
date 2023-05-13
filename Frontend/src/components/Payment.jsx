@@ -81,6 +81,7 @@ const Payment = () => {
 
     if (name === "name") {
       setNameValid(value.length >= 2 && value.trim().length > 0);
+      setCardValid(null);
     }
 
     // validate CVC length based on card number's first two digits
@@ -91,40 +92,45 @@ const Payment = () => {
         value.length === 4
       ) {
         e.target.blur(); // Unfocus the input field
-        setCardValid(true);
       } else if (value.length === 3) {
         e.target.blur(); // Unfocus the input field
-        setCardValid(true);
       } else {
-        setCardValid(false);
+        // setCardValid(false);
       }
     }
 
-    // format expiry field
-    // if (name === "expiry" && value.length === 2) {
-    //   setFormInputs((prev) => ({ ...prev, [name]: value + "/" }));
-    // } else if (name === "expiry" && value.length === 4) {
-    //   e.target.blur(); // Unfocus the input field
-    // }
-
     // Validate the expiry field
-
-    if (name === "expiry" && value.length === 4) {
-      e.target.blur(); // Unfocus the input field
-      const [month, year] = value.split("/");
-      const currentYear = new Date().getFullYear().toString().substring(-2);
-      const currentMonth = new Date().getMonth() + 1;
-
-      console.log(month, year);
-      if (
-        +year < +currentYear ||
-        (+year === +currentYear && +month < currentMonth)
-      ) {
+    if (name === "expiry") {
+      const [expMonth, expYear] = value.split("/");
+      const expDate = new Date(`20${expYear}`, expMonth - 1);
+      const currentDate = new Date();
+      console.log(currentDate);
+      if (expDate <= currentDate) {
         setExpiryError(true);
       } else {
         setExpiryError(false);
+        if (value.length === 2 && !value.includes("/")) {
+          setFormInputs((prev) => ({ ...prev, [name]: `${value}/` }));
+        } else if (value.length === 4) {
+          e.target.blur(); // Unfocus the input field
+        }
       }
     }
+
+    // if (name === "expiry") {
+    //   const [expMonth, expYear] = value.split("/");
+    //   const expDate = new Date(`20${expYear}`, expMonth - 1);
+    //   const currentDate = new Date();
+    //   if (expDate <= currentDate) {
+    //     setExpiryError(true);
+    //     setCardValid(false);
+    //   } else {
+    //     setExpiryError(false);
+    //     // if (cardCompleted && nameValid) {
+    //     //   setCardValid(true);
+    //     // }
+    //   }
+    // }
 
     setFormInputs((prev) => ({ ...prev, [name]: value }));
   };
@@ -254,11 +260,7 @@ const Payment = () => {
               onChange={handleInputChange}
               onFocus={handleInputFocus}
             />
-            {nameValid ? (
-              <FaCheck color="green" />
-            ) : (
-              <p style={{ color: "red" }}>Name field cannot be empty</p>
-            )}
+            {nameValid && <FaCheck color="green" />}
           </Label>
 
           <Label>
@@ -274,12 +276,8 @@ const Payment = () => {
               onFocus={handleInputFocus}
               style={{ borderColor: error ? "red" : "#ccc" }}
             />
-            {expiryError ? (
-              <p style={{ color: "red" }}>
-                Your card's expiration year is in the past.
-              </p>
-            ) : (
-              <FaCheck color="green" />
+            {expiryError && (
+              <p style={{ color: "red" }}>Your card has expired</p>
             )}
           </Label>
           <Label>
@@ -296,9 +294,7 @@ const Payment = () => {
             />
           </Label>
 
-          <Button type="submit" disabled={isFormValid}>
-            Confirm Payment
-          </Button>
+          <Button type="submit">Confirm Payment</Button>
         </FormWrapper>
       </Wrapper>
     </Container>
