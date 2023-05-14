@@ -61,5 +61,5 @@ export const pay = async (req, res) => {
 };
 
 export const test = (req, res) => {
-res.json("endpoint is working find")
-}
+  res.json("endpoint is working find");
+};
