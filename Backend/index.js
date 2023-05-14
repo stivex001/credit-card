@@ -12,26 +12,22 @@ const DBConnect = () => {
   mongoose
     .connect(process.env.CONNECT_STRING)
     .then(() => {
-      console.log("Succefully conneted to DB");
+      console.log("succesfully conneted to DB");
     })
     .catch((err) => {
       throw err;
     });
 };
 
-app.use(
-  cors({
-    origin: "https://credit-card-checker.vercel.app",
-    credentials: true,
-  })
-);
-
 // MIDDLEWARES
-
+app.use(cors());
 app.use(express.json());
 app.use("/api/payment", paymentRoute);
 
-app.listen(8080, () => {
-  DBConnect();
-  console.log(`listening on port 8080 `);
+// connect to local server
+const port = process.env.PORT || 5050;
+app.listen(port, (err) => {
+  if (err) throw err;
+  DBConnect()
+  console.log(`server succesfully running on ${port}`);
 });
