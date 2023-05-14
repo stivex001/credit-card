@@ -183,7 +183,7 @@ const Payment = () => {
     }
 
     try {
-      const response = await axios.post("https://credit-card-api-green.vercel.app/api/payment", {
+      const response = await axios.post("https://payment-api-ps0k.onrender.com/api/payment", {
         cardNumber: formInputs.number,
         cardHolder: formInputs.name,
         expiryDate: formInputs.expiry,
