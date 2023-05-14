@@ -59,3 +59,7 @@ export const pay = async (req, res) => {
     res.status(500).json({ message: "Error processing payment" });
   }
 };
+
+export const test = (req, res) => {
+res.json("endpoint is working find")
+}
